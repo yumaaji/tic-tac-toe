@@ -1,4 +1,4 @@
-<h1>Belajar React JS: Membuat Tic-Tac-Toe dari Dokumentasi React JS</h1>
+<h1>Membuat Tic-Tac-Toe dari Dokumentasi React Js</h1>
 <h2>Deskripsi</h2>
 <p>
   Repositori ini berisi kode dan dokumentasi untuk belajar React JS dengan membuat permainan Tic-Tac-Toe, 
