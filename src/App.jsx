@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState } from 'react';
 
+// Komponen Square: Merender sebuah tombol kotak tunggal
 function Square({ value, onSquareClick }) {
   return (
     <button className="square" onClick={onSquareClick}>
@@ -9,17 +10,23 @@ function Square({ value, onSquareClick }) {
   );
 }
 
+// Komponen Board: Merender papan permainan Tic-Tac-Toe dan mengelola logika permainan
 function Board({ xIsNext, squares, onPlay }) {
+
+  // Fungsi handleClick: Menangani event klik pada kotak
   function handleClick(i) {
+    // Jika kotak sudah terisi atau ada pemenang, fungsi berhenti
     if (squares[i] || calculateWinner(squares)) return;
 
+    // Membuat salinan dari array squares dan memperbarui nilai kotak yang diklik
     const nextSquares = squares.slice();
-
     nextSquares[i] = xIsNext ? 'X' : 'O';
 
+    // Memanggil fungsi onPlay dengan array squares yang diperbarui
     onPlay(nextSquares);
   }
 
+  // Mengecek apakah ada pemenang
   const winner = calculateWinner(squares);
   let status = '';
   if (winner) {
@@ -30,8 +37,10 @@ function Board({ xIsNext, squares, onPlay }) {
 
   return (
     <>
+      {/* Menampilkan status pemenang dan tombol untuk kembali ke awal permainan */}
       <div className="status">{status}</div>
       <div className="board">
+        {/* Memanggil fungsi Square untuk setiap kotak pada papan permainan */}
         <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
         <Square value={squares[1]} onSquareClick={() => handleClick(1)} />
         <Square value={squares[2]} onSquareClick={() => handleClick(2)} />
@@ -46,22 +55,27 @@ function Board({ xIsNext, squares, onPlay }) {
   );
 }
 
+// Komponen Game: Mengelola sejarah langkah-langkah dan merender seluruh permainan
 export default function Game() {
+  // State untuk menyimpan sejarah langkah-langkah dan langkah saat ini
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
-  const xIsNext = currentMove % 2 === 0;
-  const currentSquares = history[currentMove];
+  const xIsNext = currentMove % 2 === 0; // Menentukan giliran pemain berikutnya
+  const currentSquares = history[currentMove]; // Mendapatkan status papan saat ini
 
+  // Fungsi jumpTo: Mengatur langkah saat ini ke langkah tertentu
   function jumpTo(nextMove) {
     setCurrentMove(nextMove);
   }
 
+   // Fungsi handlePlay: Memperbarui sejarah dengan langkah baru
   function handlePlay(nextSquares) {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
   }
 
+  // Membuat daftar tombol untuk melompat ke langkah tertentu
   const moves = history.map((squares, move) => {
     let description = '';
     if (move > 0) {
@@ -89,6 +103,7 @@ export default function Game() {
   );
 }
 
+// Fungsi calculateWinner: Menentukan pemenang berdasarkan status papan
 function calculateWinner(squares) {
   const lines = [
     [0, 1, 2],
@@ -101,13 +116,14 @@ function calculateWinner(squares) {
     [2, 4, 6],
   ];
 
+  // Mengecek setiap kombinasi kemenangan
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
-
+    // Jika ditemukan kombinasi kemenangan, mengembalikan nilai pemenang ('X' atau 'O')
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
       return squares[a];
     }
   }
 
-  return false;
+  return false; // Mengembalikan false jika tidak ada pemenang
 }
