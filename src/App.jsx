@@ -1,5 +1,4 @@
-/* eslint-disable react/prop-types */
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 // Komponen Square: Merender sebuah tombol kotak tunggal
 function Square({ value, onSquareClick }) {
@@ -11,7 +10,7 @@ function Square({ value, onSquareClick }) {
 }
 
 // Komponen Board: Merender papan permainan Tic-Tac-Toe dan mengelola logika permainan
-function Board({ xIsNext, squares, onPlay }) {
+function Board({ xIsNext, squares, onPlay, onReset }) {
 
   // Fungsi handleClick: Menangani event klik pada kotak
   function handleClick(i) {
@@ -28,9 +27,12 @@ function Board({ xIsNext, squares, onPlay }) {
 
   // Mengecek apakah ada pemenang
   const winner = calculateWinner(squares);
+  const isDraw = squares.every(Boolean) && !winner; // Mengecek apakah permainan seri
   let status = '';
   if (winner) {
     status = 'Winner: ' + winner;
+  } else if (isDraw) {
+    status = 'Draw!';
   } else {
     status = 'Next player: ' + (xIsNext ? 'X' : 'O');
   }
@@ -41,16 +43,13 @@ function Board({ xIsNext, squares, onPlay }) {
       <div className="status">{status}</div>
       <div className="board">
         {/* Memanggil fungsi Square untuk setiap kotak pada papan permainan */}
-        <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
-        <Square value={squares[1]} onSquareClick={() => handleClick(1)} />
-        <Square value={squares[2]} onSquareClick={() => handleClick(2)} />
-        <Square value={squares[3]} onSquareClick={() => handleClick(3)} />
-        <Square value={squares[4]} onSquareClick={() => handleClick(4)} />
-        <Square value={squares[5]} onSquareClick={() => handleClick(5)} />
-        <Square value={squares[6]} onSquareClick={() => handleClick(6)} />
-        <Square value={squares[7]} onSquareClick={() => handleClick(7)} />
-        <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
+        {squares.map((square, i) => (
+          <Square key={i} value={square} onSquareClick={() => handleClick(i)} />
+        ))}
       </div>
+      {(winner || isDraw) && (
+        <button onClick={onReset} className="reset-button">Play Again</button>
+      )}
     </>
   );
 }
@@ -75,6 +74,12 @@ export default function Game() {
     setCurrentMove(nextHistory.length - 1);
   }
 
+  // Fungsi resetGame: Mengatur ulang permainan ke awal
+  function resetGame() {
+    setHistory([Array(9).fill(null)]);
+    setCurrentMove(0);
+  }
+
   // Membuat daftar tombol untuk melompat ke langkah tertentu
   const moves = history.map((squares, move) => {
     let description = '';
@@ -94,7 +99,7 @@ export default function Game() {
   return (
     <div className="game">
       <div className="game-board">
-        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} onReset={resetGame} />
       </div>
       {/* <div className="game-info">
         <ol>{moves}</ol>
@@ -125,5 +130,5 @@ function calculateWinner(squares) {
     }
   }
 
-  return false; // Mengembalikan false jika tidak ada pemenang
+  return null; // Mengembalikan null jika tidak ada pemenang
 }
